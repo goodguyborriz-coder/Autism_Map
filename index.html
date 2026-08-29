@@ -15,48 +15,69 @@
     #map { width: 100vw; height: 100dvh; }
 
     /* Plovoucí vyhledávací a filtrační lišta */
-    #filter-bar {
-      position: absolute;
-      top: 14px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 1000;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      width: auto;
-      max-width: calc(100% - 28px);
-      overflow-x: auto;
-      padding: 6px 10px;
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(4px);
-      border-radius: 30px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-      -webkit-overflow-scrolling: touch;
-    }
-    #filter-bar::-webkit-scrollbar { display: none; }
+   /* Plovoucí vyhledávací a filtrační lišta */
+#filter-bar {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  align-items: center;          /* Drží všechny prvky vycentrované vertikálně */
+  gap: 6px;
+  height: auto;                 /* Zabrání natažení přes celou výšku */
+  width: auto;
+  max-width: calc(100% - 28px);
+  overflow-x: auto;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(4px);
+  border-radius: 30px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  -webkit-overflow-scrolling: touch;
+}
+#filter-bar::-webkit-scrollbar { display: none; }
 
-    /* Vyhledávací box */
-    .search-container {
-      display: flex;
-      align-items: center;
-      background: #edf2f7;
-      border-radius: 20px;
-      padding: 5px 10px;
-      gap: 6px;
-      flex-shrink: 0;
-    }
-    #search-input {
-      border: none;
-      background: transparent;
-      outline: none;
-      font-size: 13px;
-      color: #2d3748;
-      width: 100px;
-      transition: width 0.2s ease;
-    }
-    #search-input:focus { width: 140px; }
-    #search-input::placeholder { color: #a0aec0; }
+/* Vyhledávací box */
+.search-container {
+  display: flex;
+  align-items: center;
+  background: #edf2f7;
+  border-radius: 20px;
+  padding: 0 10px;
+  height: 32px;                 /* Pevná výška */
+  gap: 6px;
+  flex-shrink: 0;
+}
+#search-input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 13px;
+  color: #2d3748;
+  width: 100px;
+  height: 100%;
+  transition: width 0.2s ease;
+}
+#search-input:focus { width: 140px; }
+#search-input::placeholder { color: #a0aec0; }
+
+/* Tlačítka kategorií */
+.filter-btn {
+  border: none;
+  background-color: #edf2f7;
+  color: #4a5568;
+  padding: 0 14px;
+  height: 32px;                 /* Stejná výška jako search box */
+  line-height: 32px;            /* Vycentruje text */
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
 
     /* Tlačítka kategorií */
     .filter-btn {
