@@ -22,7 +22,7 @@
     body, html { margin: 0; padding: 0; height: 100%; width: 100%; background: #f8f9fa; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     #map { width: 100vw; height: 100dvh; }
 
-    /* Plovoucí vyhledávací a filtrační lišta */
+    /* Plovoucí hlavní lišta nahoře */
     #filter-bar {
       position: absolute;
       top: 14px;
@@ -35,18 +35,14 @@
       height: auto;
       width: auto;
       max-width: calc(100% - 28px);
-      overflow-x: auto;
-      overflow-y: visible;
       padding: 6px 10px;
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(4px);
       border-radius: 30px;
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-      -webkit-overflow-scrolling: touch;
     }
-    #filter-bar::-webkit-scrollbar { display: none; }
 
-    /* Obal pro vyhledávač a našeptávač */
+    /* Obal pro vyhledávač */
     .search-wrapper {
       position: relative;
       flex-shrink: 0;
@@ -76,17 +72,17 @@
       margin: 0;
       transition: width 0.2s ease;
     }
-    #search-input:focus { width: 140px; }
+    #search-input:focus { width: 130px; }
     #search-input::placeholder { color: #a0aec0; }
 
     /* Vyskakovací seznam našeptávače */
     .search-results-dropdown {
       display: none;
       position: absolute;
-      top: calc(100% + 8px);
+      top: calc(100% + 12px);
       left: 0;
-      width: 260px;
-      max-height: 220px;
+      width: 250px;
+      max-height: 230px;
       overflow-y: auto;
       background: #ffffff;
       border-radius: 14px;
@@ -132,6 +128,16 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
+
+    /* Posuvný pás tlačítek kategorií */
+    .buttons-scroll-container {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .buttons-scroll-container::-webkit-scrollbar { display: none; }
 
     /* Tlačítka kategorií */
     .filter-btn {
@@ -214,17 +220,19 @@
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="#718096">
           <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
         </svg>
-        <input type="text" id="search-input" placeholder="Hledat místo..." autocomplete="off" />
+        <input type="text" id="search-input" placeholder="Hledat..." autocomplete="off" />
       </div>
       <div id="search-results" class="search-results-dropdown"></div>
     </div>
 
-    <button class="filter-btn active" data-kat="all">Vše</button>
-    <button class="filter-btn" data-kat="Restaurace">Restaurace</button>
-    <button class="filter-btn" data-kat="Kavárny">Kavárny</button>
-    <button class="filter-btn" data-kat="Obchody">Obchody</button>
-    <button class="filter-btn" data-kat="Volný čas">Volný čas</button>
-    <button class="filter-btn" data-kat="Služby">Služby</button>
+    <div class="buttons-scroll-container">
+      <button class="filter-btn active" data-kat="all">Vše</button>
+      <button class="filter-btn" data-kat="Restaurace">Restaurace</button>
+      <button class="filter-btn" data-kat="Kavárny">Kavárny</button>
+      <button class="filter-btn" data-kat="Obchody">Obchody</button>
+      <button class="filter-btn" data-kat="Volný čas">Volný čas</button>
+      <button class="filter-btn" data-kat="Služby">Služby</button>
+    </div>
   </div>
 
   <div id="map"></div>
@@ -420,14 +428,13 @@
       });
     });
 
-    // Výchozí barva tlačítka "Vše"
     const defaultBtn = document.querySelector('.filter-btn[data-kat="all"]');
     if (defaultBtn) {
       defaultBtn.style.setProperty('background-color', '#0c2340', 'important');
       defaultBtn.style.setProperty('color', '#ffffff', 'important');
     }
 
-    // 6. Vyhledávání a našeptávač
+    // 6. Vyhledávání
     searchInput.addEventListener('input', updateVisibleMarkers);
 
     searchInput.addEventListener('keydown', (e) => {
@@ -444,14 +451,13 @@
       }
     });
 
-    // Skrytí dropdownu při kliknutí mimo
     document.addEventListener('click', (e) => {
       if (!e.target.closest('.search-wrapper')) {
         resultsDropdown.classList.remove('active');
       }
     });
 
-    // 7. Geolokace uživatele
+    // 7. Geolokace
     let userLocationMarker = null;
     let userAccuracyCircle = null;
     const locateBtn = document.getElementById('locate-btn');
@@ -488,12 +494,12 @@
       alert('Nepodařilo se zjistit polohu. Zkontroluj, zda má prohlížeč povolený přístup k poloze.');
     });
 
-    // 8. Registrace PWA Service Workeru
+    // 8. Service Worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('sw.js')
-          .then(reg => console.log('PWA Service Worker zaregistrován:', reg.scope))
-          .catch(err => console.error('Chyba při registraci PWA:', err));
+          .then(reg => console.log('PWA OK:', reg.scope))
+          .catch(err => console.error('PWA Err:', err));
       });
     }
   </script>
