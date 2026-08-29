@@ -266,6 +266,10 @@ L.control.zoom({ position: 'bottomright' }).addTo(map);
             marker.category = kat;
             marker.addTo(map);
             allMarkers.push(marker);
+            // Uvnitř forEach v Papa.parse:
+marker.category = kat;
+// Uložíme texty v malých písmenech pro rychlé porovnávání
+marker.searchText = `${row.nazev || ''} ${row.adresa || ''} ${row.popis || ''} ${row.autism_friendly_prvky || ''}`.toLowerCase();
           }
         });
       }
@@ -374,6 +378,40 @@ map.on('locationfound', (e) => {
 // Ošetření chyby (např. nepovolená geolokace)
 map.on('locationerror', (e) => {
   alert('Nepodařilo se zjistit polohu. Zkontroluj, zda má prohlížeč povolený přístup k poloze.');
+});
+    const searchInput = document.getElementById('search-input');
+let activeCategory = 'all';
+
+function updateVisibleMarkers() {
+  const query = searchInput.value.toLowerCase().trim();
+
+  allMarkers.forEach(m => {
+    const matchesCategory = (activeCategory === 'all' || m.category === activeCategory);
+    const matchesSearch = (query === '' || m.searchText.includes(query));
+
+    if (matchesCategory && matchesSearch) {
+      if (!map.hasLayer(m)) map.addLayer(m);
+    } else {
+      if (map.hasLayer(m)) map.removeLayer(m);
+    }
+  });
+}
+
+// Vyhledávání v reálném čase při psaní
+searchInput.addEventListener('input', updateVisibleMarkers);
+
+// Při stisku Enteru přiblížit na první nalezený výsledek
+searchInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    const query = searchInput.value.toLowerCase().trim();
+    if (!query) return;
+
+    const firstMatch = allMarkers.find(m => map.hasLayer(m));
+    if (firstMatch) {
+      map.flyTo(firstMatch.getLatLng(), 16, { duration: 1 });
+      firstMatch.openPopup();
+    }
+  }
 });
   </script>
 </body>
