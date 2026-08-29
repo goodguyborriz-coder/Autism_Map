@@ -109,6 +109,32 @@
     .mapycz-btn { background-color: #fbeae8; color: #c02626; border: 1px solid #f5c2bd; }
     .gmaps-btn { background-color: #e8f0fe; color: #1a73e8; border: 1px solid #c2d7fa; }
     .leaflet-popup-content-wrapper { border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+    .search-container {
+  display: flex;
+  align-items: center;
+  background: #edf2f7;
+  border-radius: 20px;
+  padding: 4px 10px;
+  gap: 6px;
+}
+
+#search-input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 13px;
+  color: #2d3748;
+  width: 110px;
+  transition: width 0.2s ease;
+}
+
+#search-input:focus {
+  width: 150px;
+}
+
+#search-input::placeholder {
+  color: #a0aec0;
+}
   </style>
 </head>
 <body>
