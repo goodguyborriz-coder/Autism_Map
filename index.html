@@ -44,7 +44,25 @@
   -webkit-overflow-scrolling: touch;
 }
 #filter-bar::-webkit-scrollbar { display: none; }
+<div id="filter-bar">
+  <div class="search-wrapper">
+    <div class="search-container">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="#718096">
+        <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+      </svg>
+      <input type="text" id="search-input" placeholder="Hledat místo..." autocomplete="off" />
+    </div>
+    <!-- Zde se dynamicky vykreslí našeptávač -->
+    <div id="search-results" class="search-results-dropdown"></div>
+  </div>
 
+  <button class="filter-btn active" data-kat="all">Vše</button>
+  <button class="filter-btn" data-kat="Restaurace">Restaurace</button>
+  <button class="filter-btn" data-kat="Kavárny">Kavárny</button>
+  <button class="filter-btn" data-kat="Obchody">Obchody</button>
+  <button class="filter-btn" data-kat="Volný čas">Volný čas</button>
+  <button class="filter-btn" data-kat="Služby">Služby</button>
+</div>
 /* Vyhledávací box */
 .search-container {
   display: flex;
@@ -72,6 +90,62 @@
 }
 #search-input:focus { width: 140px; }
 #search-input::placeholder { color: #a0aec0; }
+    /* Povolí našeptávači přetéct ven z lišty */
+#filter-bar {
+  overflow: visible !important;
+}
+
+.search-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* Vyskakovací seznam výsledků */
+.search-results-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: 260px;
+  max-height: 220px;
+  overflow-y: auto;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  z-index: 2000;
+  padding: 6px;
+  box-sizing: border-box;
+}
+
+.search-results-dropdown.active {
+  display: block;
+}
+
+.search-result-item {
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.search-result-item:hover,
+.search-result-item:active {
+  background-color: #edf2f7;
+}
+
+.search-result-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1a202c;
+}
+
+.search-result-sub {
+  font-size: 11px;
+  color: #718096;
+}
 
 .filter-btn {
   border: none;
