@@ -457,42 +457,60 @@
       }
     });
 
-    // 7. Geolokace
-    let userLocationMarker = null;
-    let userAccuracyCircle = null;
-    const locateBtn = document.getElementById('locate-btn');
+   // 7. Geolokace s plynulým přeletem (flyTo animace)
+let userLocationMarker = null;
+let userAccuracyCircle = null;
+const locateBtn = document.getElementById('locate-btn');
 
-    locateBtn.addEventListener('click', () => {
-      map.locate({ setView: true, maxZoom: 16, enableHighAccuracy: true });
-    });
+locateBtn.addEventListener('click', () => {
+  // Vypneme automatický okamžitý skok (setView: false), abychom mohli animovat sami
+  map.locate({
+    setView: false,
+    enableHighAccuracy: true
+  });
+});
 
-    map.on('locationfound', (e) => {
-      if (userLocationMarker) map.removeLayer(userLocationMarker);
-      if (userAccuracyCircle) map.removeLayer(userAccuracyCircle);
+map.on('locationfound', (e) => {
+  // 1. Vyčištění předchozích bodů polohy
+  if (userLocationMarker) map.removeLayer(userLocationMarker);
+  if (userAccuracyCircle) map.removeLayer(userAccuracyCircle);
 
-      userAccuracyCircle = L.circle(e.latlng, {
-        radius: e.accuracy,
-        color: '#00a0be',
-        fillColor: '#00a0be',
-        fillOpacity: 0.12,
-        weight: 1
-      }).addTo(map);
+  // 2. Vykreslení kruhu přesnosti
+  userAccuracyCircle = L.circle(e.latlng, {
+    radius: e.accuracy,
+    color: '#00a0be',
+    fillColor: '#00a0be',
+    fillOpacity: 0.12,
+    weight: 1
+  }).addTo(map);
 
-      const userIcon = L.divIcon({
-        className: 'user-location-marker',
-        iconSize: [14, 14],
-        iconAnchor: [7, 7]
-      });
+  // 3. Vykreslení modrého bodu
+  const userIcon = L.divIcon({
+    className: 'user-location-marker',
+    iconSize: [14, 14],
+    iconAnchor: [7, 7]
+  });
 
-      userLocationMarker = L.marker(e.latlng, { icon: userIcon })
-        .addTo(map)
-        .bindPopup('<strong>Tvoje poloha</strong><br>Přesnost: cca ' + Math.round(e.accuracy) + ' m')
-        .openPopup();
-    });
+  userLocationMarker = L.marker(e.latlng, { icon: userIcon })
+    .addTo(map)
+    .bindPopup('<strong>Tvoje poloha</strong><br>Přesnost: cca ' + Math.round(e.accuracy) + ' m');
 
-    map.on('locationerror', () => {
-      alert('Nepodařilo se zjistit polohu. Zkontroluj, zda má prohlížeč povolený přístup k poloze.');
-    });
+  // 4. Plynulý přelet kamery s efektem vzlétnutí a přistání (flyTo)
+  map.flyTo(e.latlng, 16, {
+    animate: true,
+    duration: 1.5,      // Délka animace v sekundách
+    easeLinearity: 0.25
+  });
+
+  // Po dokončení přeletu automaticky otevřeme popup
+  setTimeout(() => {
+    if (userLocationMarker) userLocationMarker.openPopup();
+  }, 1500);
+});
+
+map.on('locationerror', () => {
+  alert('Nepodařilo se zjistit polohu. Zkontroluj, zda má prohlížeč povolený přístup k poloze.');
+});
 
     // 8. Service Worker
     if ('serviceWorker' in navigator) {
