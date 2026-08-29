@@ -8,13 +8,14 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/papaparse@5.4.1/papaparse.min.js"></script>
+
   <!-- PWA a mobilní nastavení -->
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0c2340">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Křesadlo Mapa">
-<link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0c2340">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Křesadlo Mapa">
+  <link rel="apple-touch-icon" href="icon-192.png">
 
   <style>
     * { box-sizing: border-box; }
@@ -22,158 +23,142 @@
     #map { width: 100vw; height: 100dvh; }
 
     /* Plovoucí vyhledávací a filtrační lišta */
-   /* Plovoucí vyhledávací a filtrační lišta */
-#filter-bar {
-  position: absolute;
-  top: 14px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1000;
-  display: flex;
-  align-items: center;          /* Drží všechny prvky vycentrované vertikálně */
-  gap: 6px;
-  height: auto;                 /* Zabrání natažení přes celou výšku */
-  width: auto;
-  max-width: calc(100% - 28px);
-  overflow-x: auto;
-  padding: 6px 10px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(4px);
-  border-radius: 30px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-  -webkit-overflow-scrolling: touch;
-}
-#filter-bar::-webkit-scrollbar { display: none; }
-<div id="filter-bar">
-  <div class="search-wrapper">
-    <div class="search-container">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="#718096">
-        <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-      </svg>
-      <input type="text" id="search-input" placeholder="Hledat místo..." autocomplete="off" />
-    </div>
-    <!-- Zde se dynamicky vykreslí našeptávač -->
-    <div id="search-results" class="search-results-dropdown"></div>
-  </div>
+    #filter-bar {
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      height: auto;
+      width: auto;
+      max-width: calc(100% - 28px);
+      overflow-x: auto;
+      overflow-y: visible;
+      padding: 6px 10px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(4px);
+      border-radius: 30px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+      -webkit-overflow-scrolling: touch;
+    }
+    #filter-bar::-webkit-scrollbar { display: none; }
 
-  <button class="filter-btn active" data-kat="all">Vše</button>
-  <button class="filter-btn" data-kat="Restaurace">Restaurace</button>
-  <button class="filter-btn" data-kat="Kavárny">Kavárny</button>
-  <button class="filter-btn" data-kat="Obchody">Obchody</button>
-  <button class="filter-btn" data-kat="Volný čas">Volný čas</button>
-  <button class="filter-btn" data-kat="Služby">Služby</button>
-</div>
-/* Vyhledávací box */
-.search-container {
-  display: flex;
-  align-items: center;
-  background: #edf2f7;
-  border-radius: 20px;
-  padding: 0 10px;
-  height: 32px;
-  gap: 6px;
-  flex-shrink: 0;
-  box-sizing: border-box;
-}
-#search-input {
-  border: none;
-  background: transparent;
-  outline: none;
-  font-size: 13px;
-  color: #2d3748;
-  width: 100px;
-  height: auto;
-  line-height: 1;
-  padding: 0;
-  margin: 0;
-  transition: width 0.2s ease;
-}
-#search-input:focus { width: 140px; }
-#search-input::placeholder { color: #a0aec0; }
-    /* Povolí našeptávači přetéct ven z lišty */
-#filter-bar {
-  overflow: visible !important;
-}
+    /* Obal pro vyhledávač a našeptávač */
+    .search-wrapper {
+      position: relative;
+      flex-shrink: 0;
+    }
 
-.search-wrapper {
-  position: relative;
-  flex-shrink: 0;
-}
+    .search-container {
+      display: flex;
+      align-items: center;
+      background: #edf2f7;
+      border-radius: 20px;
+      padding: 0 10px;
+      height: 32px;
+      gap: 6px;
+      box-sizing: border-box;
+    }
 
-/* Vyskakovací seznam výsledků */
-.search-results-dropdown {
-  display: none;
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 0;
-  width: 260px;
-  max-height: 220px;
-  overflow-y: auto;
-  background: #ffffff;
-  border-radius: 14px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-  z-index: 2000;
-  padding: 6px;
-  box-sizing: border-box;
-}
+    #search-input {
+      border: none;
+      background: transparent;
+      outline: none;
+      font-size: 13px;
+      color: #2d3748;
+      width: 100px;
+      height: auto;
+      line-height: 1;
+      padding: 0;
+      margin: 0;
+      transition: width 0.2s ease;
+    }
+    #search-input:focus { width: 140px; }
+    #search-input::placeholder { color: #a0aec0; }
 
-.search-results-dropdown.active {
-  display: block;
-}
+    /* Vyskakovací seznam našeptávače */
+    .search-results-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      width: 260px;
+      max-height: 220px;
+      overflow-y: auto;
+      background: #ffffff;
+      border-radius: 14px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      z-index: 2000;
+      padding: 6px;
+      box-sizing: border-box;
+    }
 
-.search-result-item {
-  padding: 8px 10px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
+    .search-results-dropdown.active {
+      display: block;
+    }
 
-.search-result-item:hover,
-.search-result-item:active {
-  background-color: #edf2f7;
-}
+    .search-result-item {
+      padding: 8px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      text-align: left;
+    }
 
-.search-result-title {
-  font-size: 13px;
-  font-weight: 700;
-  color: #1a202c;
-}
+    .search-result-item:hover,
+    .search-result-item:active {
+      background-color: #edf2f7;
+    }
 
-.search-result-sub {
-  font-size: 11px;
-  color: #718096;
-}
+    .search-result-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #1a202c;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
-.filter-btn {
-  border: none;
-  background-color: #edf2f7;
-  color: #4a5568;
-  padding: 0 14px;
-  height: 32px;
-  min-height: 32px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  line-height: 1;               /* Resetuje výšku řádku, flexbox vycentruje text */
-  margin: 0;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.2s ease;
-  flex-shrink: 0;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  box-sizing: border-box;
-}
+    .search-result-sub {
+      font-size: 11px;
+      color: #718096;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
-  
+    /* Tlačítka kategorií */
+    .filter-btn {
+      border: none;
+      background-color: #edf2f7;
+      color: #4a5568;
+      padding: 0 14px;
+      height: 32px;
+      min-height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      line-height: 1;
+      margin: 0;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      box-sizing: border-box;
+    }
 
     /* Tlačítko pro zaměření GPS polohy */
     #locate-btn {
@@ -224,11 +209,14 @@
 <body>
 
   <div id="filter-bar">
-    <div class="search-container">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="#718096">
-        <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-      </svg>
-      <input type="text" id="search-input" placeholder="Hledat místo..." autocomplete="off" />
+    <div class="search-wrapper">
+      <div class="search-container">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="#718096">
+          <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+        </svg>
+        <input type="text" id="search-input" placeholder="Hledat místo..." autocomplete="off" />
+      </div>
+      <div id="search-results" class="search-results-dropdown"></div>
     </div>
 
     <button class="filter-btn active" data-kat="all">Vše</button>
@@ -248,7 +236,7 @@
   </button>
 
   <script>
-    // 1. Konfigurace kategorií podle loga Křesadla HK
+    // 1. Konfigurace kategorií
     const categoryConfig = {
       "Restaurace": { 
         color: "#e6007e", 
@@ -297,7 +285,6 @@
 
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-    // Podkladová mapa
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors',
       maxZoom: 19
@@ -314,15 +301,44 @@
       })
       .catch(err => console.error("Chyba při načítání masky:", err));
 
-    // 4. Správa dat a vyhledávání
+    // 4. Správa dat, filtru a našeptávače
     const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTA4Zd6p3HcPigz2X2PssGXnHt06uCyV51pAZYz-2yjO-QYEepMNcNua9PvfLl2qyT54iNTqO-KqHnE/pub?gid=0&single=true&output=csv';
     let allMarkers = [];
     let activeCategory = 'all';
+
     const searchInput = document.getElementById('search-input');
+    const resultsDropdown = document.getElementById('search-results');
     const filterButtons = document.querySelectorAll('.filter-btn');
+
+    function renderDropdownResults(matchingMarkers) {
+      if (matchingMarkers.length === 0 || searchInput.value.trim() === '') {
+        resultsDropdown.innerHTML = '';
+        resultsDropdown.classList.remove('active');
+        return;
+      }
+
+      resultsDropdown.innerHTML = matchingMarkers.slice(0, 6).map((m, index) => `
+        <div class="search-result-item" data-index="${index}">
+          <span class="search-result-title">${m.placeTitle}</span>
+          <span class="search-result-sub">${m.category}${m.placeAddress ? ' • ' + m.placeAddress : ''}</span>
+        </div>
+      `).join('');
+
+      resultsDropdown.classList.add('active');
+
+      resultsDropdown.querySelectorAll('.search-result-item').forEach((item, idx) => {
+        item.addEventListener('click', () => {
+          const targetMarker = matchingMarkers[idx];
+          map.flyTo(targetMarker.getLatLng(), 17, { duration: 1 });
+          targetMarker.openPopup();
+          resultsDropdown.classList.remove('active');
+        });
+      });
+    }
 
     function updateVisibleMarkers() {
       const query = searchInput.value.toLowerCase().trim();
+      const matching = [];
 
       allMarkers.forEach(m => {
         const matchesCategory = (activeCategory === 'all' || m.category === activeCategory);
@@ -330,10 +346,13 @@
 
         if (matchesCategory && matchesSearch) {
           if (!map.hasLayer(m)) map.addLayer(m);
+          if (query !== '') matching.push(m);
         } else {
           if (map.hasLayer(m)) map.removeLayer(m);
         }
       });
+
+      renderDropdownResults(matching);
     }
 
     Papa.parse(CSV_URL, {
@@ -365,6 +384,8 @@
 
             const marker = L.marker([lat, lon], { icon: createCustomIcon(kat) }).bindPopup(popupHtml, { maxWidth: 280, minWidth: 220 });
             marker.category = kat;
+            marker.placeTitle = row.nazev || '';
+            marker.placeAddress = row.adresa || '';
             marker.searchText = `${row.nazev || ''} ${row.adresa || ''} ${row.popis || ''} ${row.autism_friendly_prvky || ''}`.toLowerCase();
             
             marker.addTo(map);
@@ -374,7 +395,7 @@
       }
     });
 
-    // 5. Obsluha tlačítek filtru
+    // 5. Tlačítka filtru
     filterButtons.forEach(btn => {
       btn.addEventListener('click', (e) => {
         activeCategory = e.currentTarget.getAttribute('data-kat');
@@ -406,7 +427,7 @@
       defaultBtn.style.setProperty('color', '#ffffff', 'important');
     }
 
-    // 6. Obsluha vyhledávání
+    // 6. Vyhledávání a našeptávač
     searchInput.addEventListener('input', updateVisibleMarkers);
 
     searchInput.addEventListener('keydown', (e) => {
@@ -416,9 +437,17 @@
 
         const firstMatch = allMarkers.find(m => map.hasLayer(m));
         if (firstMatch) {
-          map.flyTo(firstMatch.getLatLng(), 16, { duration: 1 });
+          map.flyTo(firstMatch.getLatLng(), 17, { duration: 1 });
           firstMatch.openPopup();
+          resultsDropdown.classList.remove('active');
         }
+      }
+    });
+
+    // Skrytí dropdownu při kliknutí mimo
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.search-wrapper')) {
+        resultsDropdown.classList.remove('active');
       }
     });
 
@@ -458,14 +487,15 @@
     map.on('locationerror', () => {
       alert('Nepodařilo se zjistit polohu. Zkontroluj, zda má prohlížeč povolený přístup k poloze.');
     });
-    // Registrace PWA Service Workeru
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js')
-      .then(reg => console.log('PWA Service Worker zaregistrován:', reg.scope))
-      .catch(err => console.error('Chyba při registraci PWA:', err));
-  });
-}
+
+    // 8. Registrace PWA Service Workeru
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+          .then(reg => console.log('PWA Service Worker zaregistrován:', reg.scope))
+          .catch(err => console.error('Chyba při registraci PWA:', err));
+      });
+    }
   </script>
 </body>
 </html>
