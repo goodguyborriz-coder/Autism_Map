@@ -8,6 +8,13 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/papaparse@5.4.1/papaparse.min.js"></script>
+  <!-- PWA a mobilní nastavení -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0c2340">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Křesadlo Mapa">
+<link rel="apple-touch-icon" href="icon-192.png">
 
   <style>
     * { box-sizing: border-box; }
@@ -377,6 +384,14 @@
     map.on('locationerror', () => {
       alert('Nepodařilo se zjistit polohu. Zkontroluj, zda má prohlížeč povolený přístup k poloze.');
     });
+    // Registrace PWA Service Workeru
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js')
+      .then(reg => console.log('PWA Service Worker zaregistrován:', reg.scope))
+      .catch(err => console.error('Chyba při registraci PWA:', err));
+  });
+}
   </script>
 </body>
 </html>
