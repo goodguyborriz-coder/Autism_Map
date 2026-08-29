@@ -226,6 +226,11 @@
     .mapycz-btn { background-color: #fbeae8; color: #c02626; border: 1px solid #f5c2bd; }
     .gmaps-btn { background-color: #e8f0fe; color: #1a73e8; border: 1px solid #c2d7fa; }
     .leaflet-popup-content-wrapper { border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+    /* Převede OSM dlaždice na čistý šedobílý podklad */
+    .grayscale-tiles {
+      filter: grayscale(100%) brightness(105%) contrast(85%);
+    }
+  </style>
   </style>
 </head>
 <body>
@@ -309,10 +314,11 @@
 
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-  subdomains: 'abcd',
-  maxZoom: 20
+   // Šedobílá minimalistická podkladová mapa bez nutnosti API klíče
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  className: 'grayscale-tiles',
+  maxZoom: 19
 }).addTo(map);
 
     // 3. Načtení masky Hradce
