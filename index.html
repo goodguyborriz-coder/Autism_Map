@@ -182,11 +182,11 @@ const map = L.map('map', {
 L.control.zoom({ position: 'bottomright' }).addTo(map);
 
    
-   // Světlý podklad CartoDB Positron (podporuje zoom až do detailu ulic)
-L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-  subdomains: 'abcd',
-  maxZoom: 20
+   // Esri Gray Canvas s povoleným digitálním přiblížením až do zoomu 19
+L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+  attribution: '&copy; Esri, HERE, Garmin, FAO, USGS, NGA, EPA',
+  maxNativeZoom: 16, // Poslední dostupný zoom z Esri
+  maxZoom: 19        // Leaflet dovolí přiblížit až na úroveň 19 bez chyb
 }).addTo(map);
 
     // 4. Načtení masky Hradce
