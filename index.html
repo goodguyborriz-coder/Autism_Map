@@ -326,10 +326,14 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       .then(res => res.json())
       .then(maskData => {
         L.geoJSON(maskData, {
-          style: { fillColor: '#f8f9fa', fillOpacity: 0.9, color: '#718096', weight: 1.5 },
-          interactive: false
-        }).addTo(map);
-      })
+  style: { 
+    fillColor: '#ffffff', 
+    fillOpacity: 0.85, 
+    color: '#cbd5e1', 
+    weight: 1 
+  },
+  interactive: false
+}).addTo(map);
       .catch(err => console.error("Chyba při načítání masky:", err));
 
     // 4. Správa dat, filtru, vzdáleností a popupu
