@@ -344,7 +344,7 @@ L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_L
     // 4. Správa dat, filtru, vzdáleností a popupu
     const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTA4Zd6p3HcPigz2X2PssGXnHt06uCyV51pAZYz-2yjO-QYEepMNcNua9PvfLl2qyT54iNTqO-KqHnE/pub?gid=0&single=true&output=csv';
     let allMarkers = [];
-    let activeCategory = 'all';
+    let activeCategory = null;
     let currentUserLatLng = null;
 
     const searchInput = document.getElementById('search-input');
