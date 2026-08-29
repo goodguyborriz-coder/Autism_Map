@@ -213,7 +213,9 @@
     /* Vzhled popup karet */
     .custom-svg-marker { background: transparent; border: none; }
     .popup-box { color: #2d3748; padding: 2px; }
-    .popup-tag { display: inline-block; color: #fff; font-size: 10px; font-weight: 700; text-transform: uppercase; padding: 3px 8px; border-radius: 12px; margin-bottom: 6px; }
+    .popup-top-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+    .popup-tag { display: inline-block; color: #fff; font-size: 10px; font-weight: 700; text-transform: uppercase; padding: 3px 8px; border-radius: 12px; }
+    .popup-dist-badge { font-size: 11px; font-weight: 700; color: #00a0be; background: #e6f6f9; padding: 2px 7px; border-radius: 10px; }
     .popup-title { margin: 0 0 6px 0; font-size: 15px; font-weight: 700; color: #1a202c; }
     .popup-address { margin: 0 0 8px 0; font-size: 12px; color: #718096; }
     .popup-desc { margin: 0 0 8px 0; font-size: 13px; line-height: 1.4; color: #4a5568; }
@@ -323,7 +325,7 @@
       })
       .catch(err => console.error("Chyba při načítání masky:", err));
 
-    // 4. Správa dat, filtru, vzdáleností a našeptávače
+    // 4. Správa dat, filtru, vzdáleností a popupu
     const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTA4Zd6p3HcPigz2X2PssGXnHt06uCyV51pAZYz-2yjO-QYEepMNcNua9PvfLl2qyT54iNTqO-KqHnE/pub?gid=0&single=true&output=csv';
     let allMarkers = [];
     let activeCategory = 'all';
@@ -333,7 +335,6 @@
     const resultsDropdown = document.getElementById('search-results');
     const filterButtons = document.querySelectorAll('.filter-btn');
 
-    // Pomocná funkce pro formátování vzdálenosti
     function formatDistance(meters) {
       if (meters === null || meters === undefined) return '';
       if (meters < 1000) {
@@ -342,10 +343,36 @@
       return `${(meters / 1000).toFixed(1).replace('.', ',')} km`;
     }
 
+    function createPopupContent(data, distanceMeters) {
+      const kat = data.kategorie || '';
+      const distBadge = distanceMeters ? `<span class="popup-dist-badge">📍 ${formatDistance(distanceMeters)}</span>` : '';
+
+      return `
+        <div class="popup-box">
+          <div class="popup-top-row">
+            <span class="popup-tag" style="background-color: ${categoryConfig[kat]?.color || '#4a5568'};">${kat || 'Místo'}</span>
+            ${distBadge}
+          </div>
+          <h3 class="popup-title">${data.nazev || ''}</h3>
+          ${data.adresa ? `<p class="popup-address">📍 ${data.adresa}</p>` : ''}
+          ${data.popis ? `<p class="popup-desc">${data.popis}</p>` : ''}
+          ${data.autism_friendly_prvky ? `
+            <div class="popup-features">
+              <strong>Autism-friendly:</strong>
+              ${data.autism_friendly_prvky}
+            </div>` : ''}
+          <div class="popup-actions">
+            <a href="https://mapy.cz/zakladni?q=${data.lat},${data.lon}" target="_blank" rel="noopener" class="nav-btn mapycz-btn">🗺️ Mapy.cz</a>
+            <a href="https://www.google.com/maps/search/?api=1&query=${data.lat},${data.lon}" target="_blank" rel="noopener" class="nav-btn gmaps-btn">🚗 Google</a>
+          </div>
+        </div>`;
+    }
+
     function recalculateDistances() {
       if (!currentUserLatLng) return;
       allMarkers.forEach(m => {
         m.currentDistance = currentUserLatLng.distanceTo(m.getLatLng());
+        m.setPopupContent(createPopupContent(m.rawData, m.currentDistance));
       });
     }
 
@@ -356,7 +383,6 @@
         return;
       }
 
-      // Pokud máme polohu uživatele, seřadíme nalezená místa od nejbližšího
       if (currentUserLatLng) {
         matchingMarkers.sort((a, b) => (a.currentDistance || 0) - (b.currentDistance || 0));
       }
@@ -415,24 +441,11 @@
           const kat = (row.kategorie || '').trim();
 
           if (!isNaN(lat) && !isNaN(lon) && row.nazev) {
-            const popupHtml = `
-              <div class="popup-box">
-                <span class="popup-tag" style="background-color: ${categoryConfig[kat]?.color || '#4a5568'};">${kat || 'Místo'}</span>
-                <h3 class="popup-title">${row.nazev}</h3>
-                ${row.adresa ? `<p class="popup-address">📍 ${row.adresa}</p>` : ''}
-                ${row.popis ? `<p class="popup-desc">${row.popis}</p>` : ''}
-                ${row.autism_friendly_prvky ? `
-                  <div class="popup-features">
-                    <strong>Autism-friendly:</strong>
-                    ${row.autism_friendly_prvky}
-                  </div>` : ''}
-                <div class="popup-actions">
-                  <a href="https://mapy.cz/zakladni?q=${lat},${lon}" target="_blank" rel="noopener" class="nav-btn mapycz-btn">🗺️ Mapy.cz</a>
-                  <a href="https://www.google.com/maps/search/?api=1&query=${lat},${lon}" target="_blank" rel="noopener" class="nav-btn gmaps-btn">🚗 Google</a>
-                </div>
-              </div>`;
+            const rawData = { ...row, lat, lon, kategorie: kat };
+            const marker = L.marker([lat, lon], { icon: createCustomIcon(kat) })
+              .bindPopup(createPopupContent(rawData, null), { maxWidth: 280, minWidth: 220 });
 
-            const marker = L.marker([lat, lon], { icon: createCustomIcon(kat) }).bindPopup(popupHtml, { maxWidth: 280, minWidth: 220 });
+            marker.rawData = rawData;
             marker.category = kat;
             marker.placeTitle = row.nazev || '';
             marker.placeAddress = row.adresa || '';
@@ -443,6 +456,10 @@
             allMarkers.push(marker);
           }
         });
+
+        if (currentUserLatLng) {
+          recalculateDistances();
+        }
       }
     });
 
@@ -500,7 +517,7 @@
       }
     });
 
-    // 7. Geolokace s plynulým přeletem a přepočtem vzdáleností
+    // 7. Geolokace s přeletem a přepočtem vzdáleností
     let userLocationMarker = null;
     let userAccuracyCircle = null;
     const locateBtn = document.getElementById('locate-btn');
@@ -550,10 +567,10 @@
       alert('Nepodařilo se zjistit polohu. Zkontroluj, zda má prohlížeč povolený přístup k poloze.');
     });
 
-    // Pokus o tichou lokalizaci na pozadí při startu pro okamžité vzdálenosti
+    // Tichá lokalizace při načtení
     map.locate({ setView: false, enableHighAccuracy: true });
 
-    // 8. Service Worker
+    // 8. Registrace Service Workeru
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('sw.js')
