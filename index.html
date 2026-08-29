@@ -62,14 +62,15 @@
 #search-input:focus { width: 140px; }
 #search-input::placeholder { color: #a0aec0; }
 
-/* Tlačítka kategorií */
 .filter-btn {
   border: none;
   background-color: #edf2f7;
   color: #4a5568;
   padding: 0 14px;
-  height: 32px;                 /* Stejná výška jako search box */
-  line-height: 32px;            /* Vycentruje text */
+  height: 32px;
+  display: inline-flex;          /* Zapne flexbox pro tlačítko */
+  align-items: center;          /* Vycentruje text přesně na střed vertikálně */
+  justify-content: center;      /* Vycentruje text horizontálně */
   border-radius: 20px;
   font-size: 13px;
   font-weight: 600;
@@ -77,22 +78,10 @@
   white-space: nowrap;
   transition: all 0.2s ease;
   flex-shrink: 0;
+  -webkit-appearance: none;     /* Vypne výchozí mobilní stylování tlačítek */
 }
 
-    /* Tlačítka kategorií */
-    .filter-btn {
-      border: none;
-      background-color: #edf2f7;
-      color: #4a5568;
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.2s ease;
-      flex-shrink: 0;
-    }
+  
 
     /* Tlačítko pro zaměření GPS polohy */
     #locate-btn {
