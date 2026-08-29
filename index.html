@@ -131,7 +131,7 @@
     .search-result-dist {
       font-size: 11px;
       font-weight: 600;
-      color: #00a0be;
+      color: #3a9bb0;
       white-space: nowrap;
     }
 
@@ -204,10 +204,10 @@
     .user-location-marker {
       width: 14px;
       height: 14px;
-      background-color: #00a0be;
+      background-color: #3a9bb0;
       border: 2.5px solid #ffffff;
       border-radius: 50%;
-      box-shadow: 0 0 0 4px rgba(0, 160, 190, 0.35);
+      box-shadow: 0 0 0 4px rgba(58, 155, 176, 0.35);
     }
 
     /* Vzhled popup karet */
@@ -215,22 +215,17 @@
     .popup-box { color: #334155; padding: 2px; line-height: 1.5; }
     .popup-top-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
     .popup-tag { display: inline-block; color: #fff; font-size: 10px; font-weight: 700; text-transform: uppercase; padding: 3px 8px; border-radius: 12px; }
-    .popup-dist-badge { font-size: 11px; font-weight: 700; color: #00a0be; background: #e6f6f9; padding: 2px 7px; border-radius: 10px; }
+    .popup-dist-badge { font-size: 11px; font-weight: 700; color: #3a9bb0; background: #e6f6f9; padding: 2px 7px; border-radius: 10px; }
     .popup-title { margin: 0 0 6px 0; font-size: 15px; font-weight: 700; color: #1e293b; }
     .popup-address { margin: 0 0 8px 0; font-size: 12px; color: #64748b; }
     .popup-desc { margin: 0 0 8px 0; font-size: 13px; color: #475569; }
-    .popup-features { background: #f1f5f9; padding: 6px 8px; border-radius: 6px; font-size: 11.5px; line-height: 1.4; border-left: 3px solid #00a0be; margin-bottom: 8px; }
+    .popup-features { background: #f1f5f9; padding: 6px 8px; border-radius: 6px; font-size: 11.5px; line-height: 1.4; border-left: 3px solid #3a9bb0; margin-bottom: 8px; }
     .popup-features strong { color: #0c2340; display: block; margin-bottom: 2px; }
     .popup-actions { display: flex; gap: 6px; }
     .nav-btn { flex: 1; display: inline-flex; align-items: center; justify-content: center; padding: 6px; font-size: 11.5px; font-weight: 600; text-decoration: none; border-radius: 6px; }
     .mapycz-btn { background-color: #fbeae8; color: #c02626; border: 1px solid #f5c2bd; }
     .gmaps-btn { background-color: #e8f0fe; color: #1a73e8; border: 1px solid #c2d7fa; }
     .leaflet-popup-content-wrapper { border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
-    
-    /* Převede OSM dlaždice na čistý šedobílý podklad */
-    .grayscale-tiles {
-      filter: grayscale(100%) brightness(105%) contrast(85%);
-    }
   </style>
 </head>
 <body>
@@ -239,7 +234,7 @@
     <div class="search-wrapper">
       <div class="search-container">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="#718096">
-          <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+          <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 14z"/>
         </svg>
         <input type="text" id="search-input" placeholder="Hledat..." autocomplete="off" />
       </div>
@@ -247,7 +242,7 @@
     </div>
 
     <div class="buttons-scroll-container">
-      <button class="filter-btn active" data-kat="all">Vše</button>
+      <button class="filter-btn" data-kat="all">Vše</button>
       <button class="filter-btn" data-kat="Restaurace">Restaurace</button>
       <button class="filter-btn" data-kat="Kavárny">Kavárny</button>
       <button class="filter-btn" data-kat="Obchody">Obchody</button>
@@ -265,33 +260,32 @@
   </button>
 
   <script>
-    // 1. Konfigurace kategorií
-    // 1. Zklidněná barevná paleta šetrná k senzorickému vnímání
-const categoryConfig = {
-  "Restaurace": { 
-    color: "#d44b79", 
-    path: '<path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/>' 
-  },
-  "Kavárny": { 
-    color: "#d97736", 
-    path: '<path d="M20 3H4v10c0 2.21 1.79 4 4 4h6c2.21 0 4-1.79 4-4v-3h2c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 5h-2V5h2v3zM2 21h18v-2H2v2z"/>' 
-  },
-  "Obchody": { 
-    color: "#3a9bb0", 
-    path: '<path d="M18 6h-2c0-2.21-1.79-4-4-4S8 3.79 8 6H6c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6-2c1.1 0 2 .9 2 2h-4c0-1.1.9-2 2-2zm6 16H6V8h2v2c0 .55.45 1 1 1s1-.45 1-1V8h4v2c0 .55.45 1 1 1s1-.45 1-1V8h2v12z"/>' 
-  },
-  "Volný čas": { 
-    color: "#243c5a", 
-    path: '<path d="M14 6l-3.8 5h2.8l-4 6h3V22h2v-5h3l-4-6h2.8L14 6z"/>' 
-  },
-  "Služby": { 
-    color: "#64748b", 
-    path: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>' 
-  }
+    // 1. Konfigurace kategorií s měkčí senzorickou paletou
+    const categoryConfig = {
+      "Restaurace": { 
+        color: "#d44b79", 
+        path: '<path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/>' 
+      },
+      "Kavárny": { 
+        color: "#d97736", 
+        path: '<path d="M20 3H4v10c0 2.21 1.79 4 4 4h6c2.21 0 4-1.79 4-4v-3h2c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 5h-2V5h2v3zM2 21h18v-2H2v2z"/>' 
+      },
+      "Obchody": { 
+        color: "#3a9bb0", 
+        path: '<path d="M18 6h-2c0-2.21-1.79-4-4-4S8 3.79 8 6H6c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6-2c1.1 0 2 .9 2 2h-4c0-1.1.9-2 2-2zm6 16H6V8h2v2c0 .55.45 1 1 1s1-.45 1-1V8h4v2c0 .55.45 1 1 1s1-.45 1-1V8h2v12z"/>' 
+      },
+      "Volný čas": { 
+        color: "#243c5a", 
+        path: '<path d="M14 6l-3.8 5h2.8l-4 6h3V22h2v-5h3l-4-6h2.8L14 6z"/>' 
+      },
+      "Služby": { 
+        color: "#64748b", 
+        path: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>' 
+      }
     };
 
     function createCustomIcon(kat) {
-      const cfg = categoryConfig[kat] || { color: "#4a5568", path: '<circle cx="12" cy="12" r="6"/>' };
+      const cfg = categoryConfig[kat] || { color: "#64748b", path: '<circle cx="12" cy="12" r="6"/>' };
       const svg = `
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 42" width="30" height="40" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">
           <path d="M16 0C7.16 0 0 7.16 0 16c0 10.5 16 26 16 26s16-15.5 16-26C32 7.16 24.84 0 16 0z" fill="${cfg.color}" stroke="#fff" stroke-width="1.5"/>
@@ -315,17 +309,14 @@ const categoryConfig = {
 
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-// Čistá šedobílá mapa Esri bez popisků a s povoleným zoomem do detailu
-L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
-  attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
-  maxNativeZoom: 16, // Poslední dostupná úroveň detailu od Esri
-  maxZoom: 19        // Umožní přiblížit až na úroveň 19 (dlaždice se plynule roztáhnou)
-}).addTo(map);
+    // Čistá šedobílá mapa Esri bez popisků
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
+      maxNativeZoom: 16,
+      maxZoom: 19
+    }).addTo(map);
 
-
-
-
-    // 3. Načtení zjemněné masky Hradce
+    // 3. Načtení masky Hradce
     fetch('Maska_Hradce.geojson')
       .then(res => res.json())
       .then(maskData => {
@@ -344,7 +335,7 @@ L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_L
     // 4. Správa dat, filtru, vzdáleností a popupu
     const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTA4Zd6p3HcPigz2X2PssGXnHt06uCyV51pAZYz-2yjO-QYEepMNcNua9PvfLl2qyT54iNTqO-KqHnE/pub?gid=0&single=true&output=csv';
     let allMarkers = [];
-    let activeCategory = null;
+    let activeCategory = null; // Výchozí stav: Žádná kategorie není vybrána (čistá mapa)
     let currentUserLatLng = null;
 
     const searchInput = document.getElementById('search-input');
@@ -366,7 +357,7 @@ L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_L
       return `
         <div class="popup-box">
           <div class="popup-top-row">
-            <span class="popup-tag" style="background-color: ${categoryConfig[kat]?.color || '#4a5568'};">${kat || 'Místo'}</span>
+            <span class="popup-tag" style="background-color: ${categoryConfig[kat]?.color || '#64748b'};">${kat || 'Místo'}</span>
             ${distBadge}
           </div>
           <h3 class="popup-title">${data.nazev || ''}</h3>
@@ -421,6 +412,9 @@ L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_L
       resultsDropdown.querySelectorAll('.search-result-item').forEach((item, idx) => {
         item.addEventListener('click', () => {
           const targetMarker = matchingMarkers[idx];
+          if (!map.hasLayer(targetMarker)) {
+            map.addLayer(targetMarker);
+          }
           map.flyTo(targetMarker.getLatLng(), 17, { duration: 1.2 });
           targetMarker.openPopup();
           resultsDropdown.classList.remove('active');
@@ -434,13 +428,17 @@ L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_L
 
       allMarkers.forEach(m => {
         const matchesCategory = (activeCategory === 'all' || m.category === activeCategory);
-        const matchesSearch = (query === '' || m.searchText.includes(query));
+        const matchesSearch = (query !== '' && m.searchText.includes(query));
 
-        if (matchesCategory && matchesSearch) {
+        // Zobrazí se pokud odpovídá aktivní kategorii, NEBO pokud uživatel píše hledaný text
+        if ((activeCategory && matchesCategory) || matchesSearch) {
           if (!map.hasLayer(m)) map.addLayer(m);
-          if (query !== '') matching.push(m);
         } else {
           if (map.hasLayer(m)) map.removeLayer(m);
+        }
+
+        if (query !== '' && m.searchText.includes(query)) {
+          matching.push(m);
         }
       });
 
@@ -468,7 +466,7 @@ L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_L
             marker.currentDistance = null;
             marker.searchText = `${row.nazev || ''} ${row.adresa || ''} ${row.popis || ''} ${row.autism_friendly_prvky || ''}`.toLowerCase();
             
-            marker.addTo(map);
+            // Piny se na začátku nepřidávají do mapy (čekají na kliknutí nebo hledání)
             allMarkers.push(marker);
           }
         });
@@ -479,36 +477,38 @@ L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_L
       }
     });
 
-    // 5. Tlačítka filtru
+    // 5. Tlačítka filtru (kliknutím na aktivní tlačítko se kategorie zruší zpět na čistou mapu)
     filterButtons.forEach(btn => {
       btn.addEventListener('click', (e) => {
-        activeCategory = e.currentTarget.getAttribute('data-kat');
+        const clickedCat = e.currentTarget.getAttribute('data-kat');
 
-        filterButtons.forEach(b => {
-          b.classList.remove('active');
-          b.style.removeProperty('background-color');
-          b.style.removeProperty('color');
-        });
+        if (activeCategory === clickedCat) {
+          activeCategory = null;
+          e.currentTarget.classList.remove('active');
+          e.currentTarget.style.removeProperty('background-color');
+          e.currentTarget.style.removeProperty('color');
+        } else {
+          activeCategory = clickedCat;
+          filterButtons.forEach(b => {
+            b.classList.remove('active');
+            b.style.removeProperty('background-color');
+            b.style.removeProperty('color');
+          });
 
-        e.currentTarget.classList.add('active');
+          e.currentTarget.classList.add('active');
 
-        if (activeCategory === 'all') {
-          e.currentTarget.style.setProperty('background-color', '#0c2340', 'important');
-          e.currentTarget.style.setProperty('color', '#ffffff', 'important');
-        } else if (categoryConfig[activeCategory]) {
-          e.currentTarget.style.setProperty('background-color', categoryConfig[activeCategory].color, 'important');
-          e.currentTarget.style.setProperty('color', '#ffffff', 'important');
+          if (activeCategory === 'all') {
+            e.currentTarget.style.setProperty('background-color', '#243c5a', 'important');
+            e.currentTarget.style.setProperty('color', '#ffffff', 'important');
+          } else if (categoryConfig[activeCategory]) {
+            e.currentTarget.style.setProperty('background-color', categoryConfig[activeCategory].color, 'important');
+            e.currentTarget.style.setProperty('color', '#ffffff', 'important');
+          }
         }
 
         updateVisibleMarkers();
       });
     });
-
-    const defaultBtn = document.querySelector('.filter-btn[data-kat="all"]');
-    if (defaultBtn) {
-      defaultBtn.style.setProperty('background-color', '#0c2340', 'important');
-      defaultBtn.style.setProperty('color', '#ffffff', 'important');
-    }
 
     // 6. Vyhledávání
     searchInput.addEventListener('input', updateVisibleMarkers);
@@ -518,8 +518,9 @@ L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_L
         const query = searchInput.value.toLowerCase().trim();
         if (!query) return;
 
-        const firstMatch = allMarkers.find(m => map.hasLayer(m));
+        const firstMatch = allMarkers.find(m => m.searchText.includes(query));
         if (firstMatch) {
+          if (!map.hasLayer(firstMatch)) map.addLayer(firstMatch);
           map.flyTo(firstMatch.getLatLng(), 17, { duration: 1.2 });
           firstMatch.openPopup();
           resultsDropdown.classList.remove('active');
@@ -552,8 +553,8 @@ L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_L
 
       userAccuracyCircle = L.circle(e.latlng, {
         radius: e.accuracy,
-        color: '#00a0be',
-        fillColor: '#00a0be',
+        color: '#3a9bb0',
+        fillColor: '#3a9bb0',
         fillOpacity: 0.12,
         weight: 1
       }).addTo(map);
