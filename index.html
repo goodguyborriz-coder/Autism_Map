@@ -182,11 +182,9 @@ const map = L.map('map', {
 L.control.zoom({ position: 'bottomright' }).addTo(map);
 
    
-   // Esri Gray Canvas s povoleným digitálním přiblížením až do zoomu 19
-L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
-  attribution: '&copy; Esri, HERE, Garmin, FAO, USGS, NGA, EPA',
-  maxNativeZoom: 16, // Poslední dostupný zoom z Esri
-  maxZoom: 19        // Leaflet dovolí přiblížit až na úroveň 19 bez chyb
+ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; OpenStreetMap contributors',
+  maxZoom: 19
 }).addTo(map);
 
     // 4. Načtení masky Hradce
