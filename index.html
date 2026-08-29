@@ -314,11 +314,13 @@
 
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-// Čistá šedobílá mapa bez jakýchkoliv nápisů a bez nutnosti API klíče
+// Čistá šedobílá mapa Esri bez popisků a s povoleným zoomem do detailu
 L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
   attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
-  maxZoom: 16
+  maxNativeZoom: 16, // Poslední dostupná úroveň detailu od Esri
+  maxZoom: 19        // Umožní přiblížit až na úroveň 19 (dlaždice se plynule roztáhnou)
 }).addTo(map);
+
 
 
 
