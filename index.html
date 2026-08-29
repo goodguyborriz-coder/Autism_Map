@@ -81,8 +81,8 @@
       position: absolute;
       top: calc(100% + 12px);
       left: 0;
-      width: 250px;
-      max-height: 230px;
+      width: 270px;
+      max-height: 240px;
       overflow-y: auto;
       background: #ffffff;
       border-radius: 14px;
@@ -112,6 +112,13 @@
       background-color: #edf2f7;
     }
 
+    .search-result-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
     .search-result-title {
       font-size: 13px;
       font-weight: 700;
@@ -119,6 +126,13 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+    }
+
+    .search-result-dist {
+      font-size: 11px;
+      font-weight: 600;
+      color: #00a0be;
+      white-space: nowrap;
     }
 
     .search-result-sub {
@@ -309,14 +323,31 @@
       })
       .catch(err => console.error("Chyba při načítání masky:", err));
 
-    // 4. Správa dat, filtru a našeptávače
+    // 4. Správa dat, filtru, vzdáleností a našeptávače
     const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTA4Zd6p3HcPigz2X2PssGXnHt06uCyV51pAZYz-2yjO-QYEepMNcNua9PvfLl2qyT54iNTqO-KqHnE/pub?gid=0&single=true&output=csv';
     let allMarkers = [];
     let activeCategory = 'all';
+    let currentUserLatLng = null;
 
     const searchInput = document.getElementById('search-input');
     const resultsDropdown = document.getElementById('search-results');
     const filterButtons = document.querySelectorAll('.filter-btn');
+
+    // Pomocná funkce pro formátování vzdálenosti
+    function formatDistance(meters) {
+      if (meters === null || meters === undefined) return '';
+      if (meters < 1000) {
+        return `${Math.round(meters)} m`;
+      }
+      return `${(meters / 1000).toFixed(1).replace('.', ',')} km`;
+    }
+
+    function recalculateDistances() {
+      if (!currentUserLatLng) return;
+      allMarkers.forEach(m => {
+        m.currentDistance = currentUserLatLng.distanceTo(m.getLatLng());
+      });
+    }
 
     function renderDropdownResults(matchingMarkers) {
       if (matchingMarkers.length === 0 || searchInput.value.trim() === '') {
@@ -325,19 +356,30 @@
         return;
       }
 
-      resultsDropdown.innerHTML = matchingMarkers.slice(0, 6).map((m, index) => `
-        <div class="search-result-item" data-index="${index}">
-          <span class="search-result-title">${m.placeTitle}</span>
-          <span class="search-result-sub">${m.category}${m.placeAddress ? ' • ' + m.placeAddress : ''}</span>
-        </div>
-      `).join('');
+      // Pokud máme polohu uživatele, seřadíme nalezená místa od nejbližšího
+      if (currentUserLatLng) {
+        matchingMarkers.sort((a, b) => (a.currentDistance || 0) - (b.currentDistance || 0));
+      }
+
+      resultsDropdown.innerHTML = matchingMarkers.slice(0, 6).map((m, index) => {
+        const distBadge = m.currentDistance ? `<span class="search-result-dist">${formatDistance(m.currentDistance)}</span>` : '';
+        return `
+          <div class="search-result-item" data-index="${index}">
+            <div class="search-result-header">
+              <span class="search-result-title">${m.placeTitle}</span>
+              ${distBadge}
+            </div>
+            <span class="search-result-sub">${m.category}${m.placeAddress ? ' • ' + m.placeAddress : ''}</span>
+          </div>
+        `;
+      }).join('');
 
       resultsDropdown.classList.add('active');
 
       resultsDropdown.querySelectorAll('.search-result-item').forEach((item, idx) => {
         item.addEventListener('click', () => {
           const targetMarker = matchingMarkers[idx];
-          map.flyTo(targetMarker.getLatLng(), 17, { duration: 1 });
+          map.flyTo(targetMarker.getLatLng(), 17, { duration: 1.2 });
           targetMarker.openPopup();
           resultsDropdown.classList.remove('active');
         });
@@ -394,6 +436,7 @@
             marker.category = kat;
             marker.placeTitle = row.nazev || '';
             marker.placeAddress = row.adresa || '';
+            marker.currentDistance = null;
             marker.searchText = `${row.nazev || ''} ${row.adresa || ''} ${row.popis || ''} ${row.autism_friendly_prvky || ''}`.toLowerCase();
             
             marker.addTo(map);
@@ -444,7 +487,7 @@
 
         const firstMatch = allMarkers.find(m => map.hasLayer(m));
         if (firstMatch) {
-          map.flyTo(firstMatch.getLatLng(), 17, { duration: 1 });
+          map.flyTo(firstMatch.getLatLng(), 17, { duration: 1.2 });
           firstMatch.openPopup();
           resultsDropdown.classList.remove('active');
         }
@@ -457,60 +500,58 @@
       }
     });
 
-   // 7. Geolokace s plynulým přeletem (flyTo animace)
-let userLocationMarker = null;
-let userAccuracyCircle = null;
-const locateBtn = document.getElementById('locate-btn');
+    // 7. Geolokace s plynulým přeletem a přepočtem vzdáleností
+    let userLocationMarker = null;
+    let userAccuracyCircle = null;
+    const locateBtn = document.getElementById('locate-btn');
 
-locateBtn.addEventListener('click', () => {
-  // Vypneme automatický okamžitý skok (setView: false), abychom mohli animovat sami
-  map.locate({
-    setView: false,
-    enableHighAccuracy: true
-  });
-});
+    locateBtn.addEventListener('click', () => {
+      map.locate({ setView: false, enableHighAccuracy: true });
+    });
 
-map.on('locationfound', (e) => {
-  // 1. Vyčištění předchozích bodů polohy
-  if (userLocationMarker) map.removeLayer(userLocationMarker);
-  if (userAccuracyCircle) map.removeLayer(userAccuracyCircle);
+    map.on('locationfound', (e) => {
+      currentUserLatLng = e.latlng;
+      recalculateDistances();
+      if (searchInput.value.trim() !== '') updateVisibleMarkers();
 
-  // 2. Vykreslení kruhu přesnosti
-  userAccuracyCircle = L.circle(e.latlng, {
-    radius: e.accuracy,
-    color: '#00a0be',
-    fillColor: '#00a0be',
-    fillOpacity: 0.12,
-    weight: 1
-  }).addTo(map);
+      if (userLocationMarker) map.removeLayer(userLocationMarker);
+      if (userAccuracyCircle) map.removeLayer(userAccuracyCircle);
 
-  // 3. Vykreslení modrého bodu
-  const userIcon = L.divIcon({
-    className: 'user-location-marker',
-    iconSize: [14, 14],
-    iconAnchor: [7, 7]
-  });
+      userAccuracyCircle = L.circle(e.latlng, {
+        radius: e.accuracy,
+        color: '#00a0be',
+        fillColor: '#00a0be',
+        fillOpacity: 0.12,
+        weight: 1
+      }).addTo(map);
 
-  userLocationMarker = L.marker(e.latlng, { icon: userIcon })
-    .addTo(map)
-    .bindPopup('<strong>Tvoje poloha</strong><br>Přesnost: cca ' + Math.round(e.accuracy) + ' m');
+      const userIcon = L.divIcon({
+        className: 'user-location-marker',
+        iconSize: [14, 14],
+        iconAnchor: [7, 7]
+      });
 
-  // 4. Plynulý přelet kamery s efektem vzlétnutí a přistání (flyTo)
-  map.flyTo(e.latlng, 16, {
-    animate: true,
-    duration: 1.5,      // Délka animace v sekundách
-    easeLinearity: 0.25
-  });
+      userLocationMarker = L.marker(e.latlng, { icon: userIcon })
+        .addTo(map)
+        .bindPopup('<strong>Tvoje poloha</strong><br>Přesnost: cca ' + Math.round(e.accuracy) + ' m');
 
-  // Po dokončení přeletu automaticky otevřeme popup
-  setTimeout(() => {
-    if (userLocationMarker) userLocationMarker.openPopup();
-  }, 1500);
-});
+      map.flyTo(e.latlng, 16, {
+        animate: true,
+        duration: 1.5,
+        easeLinearity: 0.25
+      });
 
-map.on('locationerror', () => {
-  alert('Nepodařilo se zjistit polohu. Zkontroluj, zda má prohlížeč povolený přístup k poloze.');
-});
+      setTimeout(() => {
+        if (userLocationMarker) userLocationMarker.openPopup();
+      }, 1500);
+    });
+
+    map.on('locationerror', () => {
+      alert('Nepodařilo se zjistit polohu. Zkontroluj, zda má prohlížeč povolený přístup k poloze.');
+    });
+
+    // Pokus o tichou lokalizaci na pozadí při startu pro okamžité vzdálenosti
+    map.locate({ setView: false, enableHighAccuracy: true });
 
     // 8. Service Worker
     if ('serviceWorker' in navigator) {
