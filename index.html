@@ -45,9 +45,10 @@
   background: #edf2f7;
   border-radius: 20px;
   padding: 0 10px;
-  height: 32px;                 /* Pevná výška */
+  height: 32px;
   gap: 6px;
   flex-shrink: 0;
+  box-sizing: border-box;
 }
 #search-input {
   border: none;
@@ -56,7 +57,10 @@
   font-size: 13px;
   color: #2d3748;
   width: 100px;
-  height: 100%;
+  height: auto;
+  line-height: 1;
+  padding: 0;
+  margin: 0;
   transition: width 0.2s ease;
 }
 #search-input:focus { width: 140px; }
@@ -68,9 +72,13 @@
   color: #4a5568;
   padding: 0 14px;
   height: 32px;
-  display: inline-flex;          /* Zapne flexbox pro tlačítko */
-  align-items: center;          /* Vycentruje text přesně na střed vertikálně */
-  justify-content: center;      /* Vycentruje text horizontálně */
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1;               /* Resetuje výšku řádku, flexbox vycentruje text */
+  margin: 0;
   border-radius: 20px;
   font-size: 13px;
   font-weight: 600;
@@ -78,7 +86,10 @@
   white-space: nowrap;
   transition: all 0.2s ease;
   flex-shrink: 0;
-  -webkit-appearance: none;     /* Vypne výchozí mobilní stylování tlačítek */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  box-sizing: border-box;
 }
 
   
