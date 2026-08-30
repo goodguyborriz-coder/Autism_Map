@@ -48,7 +48,7 @@
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
     }
 
-    /* Obal pro vyhledávač v horním řádku */
+    /* Obal pro vyhledávač */
     .search-wrapper {
       position: relative;
       width: 100%;
@@ -145,7 +145,7 @@
       text-overflow: ellipsis;
     }
 
-    /* Posuvný pás tlačítek kategorií */
+    /* Posuvný pás tlačítek s měkkým přechodem do ztracena */
     .buttons-scroll-container {
       display: flex;
       align-items: center;
@@ -154,6 +154,8 @@
       -webkit-overflow-scrolling: touch;
       width: 100%;
       padding-bottom: 2px;
+      mask-image: linear-gradient(to right, black 85%, transparent 100%);
+      -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
     }
     .buttons-scroll-container::-webkit-scrollbar { display: none; }
 
@@ -181,26 +183,38 @@
       box-sizing: border-box;
     }
 
-    /* Tlačítko pro zaměření GPS polohy */
+    /* Samostatné elegantní kulaté GPS tlačítko vpravo dole */
     #locate-btn {
       position: absolute;
-      bottom: 80px;
-      right: 12px;
+      bottom: 24px;
+      right: 16px;
       z-index: 1000;
-      width: 34px;
-      height: 34px;
+      width: 44px;
+      height: 44px;
       background: #ffffff;
-      border: 1px solid #cbd5e1;
-      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+      border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-      transition: background 0.2s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transition: background 0.2s ease, transform 0.15s ease;
     }
-    #locate-btn:hover { background: #f8fafc; }
-    #locate-btn svg { fill: #2d3748; }
+    #locate-btn:active { transform: scale(0.94); }
+    #locate-btn svg { fill: #475569; }
+
+    /* Maximálně ztlumená licenční patička Leafletu */
+    .leaflet-control-attribution {
+      font-size: 8.5px !important;
+      opacity: 0.3 !important;
+      background: transparent !important;
+      margin: 0 8px 4px 0 !important;
+    }
+    .leaflet-control-attribution a {
+      color: #64748b !important;
+      text-decoration: none !important;
+    }
 
     /* Bod polohy uživatele */
     .user-location-marker {
@@ -260,7 +274,7 @@
   <div id="map"></div>
 
   <button id="locate-btn" title="Kde se právě nacházím?">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22">
       <path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0 0 13 3.06V1h-2v2.06A8.994 8.994 0 0 0 3.06 11H1v2h2.06A8.994 8.994 0 0 0 11 20.94V23h2v-2.06A8.994 8.994 0 0 0 20.94 13H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/>
     </svg>
   </button>
@@ -301,7 +315,7 @@
       return L.divIcon({ html: svg, className: 'custom-svg-marker', iconSize: [30, 40], iconAnchor: [15, 40], popupAnchor: [0, -36] });
     }
 
-    // 2. Inicializace mapy
+    // 2. Inicializace mapy (čistá bez zoom controlu)
     const hradecBounds = L.latLngBounds([50.1400, 15.6800], [50.2900, 15.9800]);
     const map = L.map('map', {
       center: [50.2092, 15.8328],
@@ -313,9 +327,7 @@
       maxBoundsViscosity: 0.8
     });
 
-    L.control.zoom({ position: 'bottomright' }).addTo(map);
-
-    // Šedobílá mapa Esri bez popisků
+    // Šedobílá mapa Esri bez textového smogu
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
       attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
       maxNativeZoom: 16,
@@ -341,7 +353,7 @@
     // 4. Správa dat, filtru a vyhledávání
     const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTA4Zd6p3HcPigz2X2PssGXnHt06uCyV51pAZYz-2yjO-QYEepMNcNua9PvfLl2qyT54iNTqO-KqHnE/pub?gid=0&single=true&output=csv';
     let allMarkers = [];
-    let activeCategory = null; // Výchozí čistá mapa bez pinů
+    let activeCategory = null;
     let currentUserLatLng = null;
 
     const searchInput = document.getElementById('search-input');
@@ -475,7 +487,7 @@
       }
     });
 
-    // 5. Tlačítka filtru (opětovné kliknutí zruší filtr)
+    // 5. Tlačítka filtru
     filterButtons.forEach(btn => {
       btn.addEventListener('click', (e) => {
         const clickedCat = e.currentTarget.getAttribute('data-kat');
