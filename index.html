@@ -18,41 +18,16 @@
   <link rel="apple-touch-icon" href="icon-192.png">
 
   <style>
-    :root {
-      --bg-color: #f8f9fa;
-      --panel-bg: rgba(255, 255, 255, 0.98);
-      --input-bg: #edf2f7;
-      --text-main: #1e293b;
-      --text-muted: #64748b;
-      --btn-bg: #edf2f7;
-      --btn-text: #4a5568;
-      --card-bg: #ffffff;
-      --card-border: #e2e8f0;
-      --feature-bg: #f1f5f9;
-      --shadow-color: rgba(0, 0, 0, 0.08);
-      --control-bg: #ffffff;
-      --control-icon: #2d3748;
-    }
-
-    body.dark-theme {
-      --bg-color: #0f172a;
-      --panel-bg: rgba(30, 41, 59, 0.95);
-      --input-bg: #0f172a;
-      --text-main: #f1f5f9;
-      --text-muted: #94a3b8;
-      --btn-bg: #0f172a;
-      --btn-text: #cbd5e1;
-      --card-bg: #1e293b;
-      --card-border: #334155;
-      --feature-bg: #0f172a;
-      --shadow-color: rgba(0, 0, 0, 0.35);
-      --control-bg: #1e293b;
-      --control-icon: #f1f5f9;
-    }
-
     * { box-sizing: border-box; }
-    body, html { margin: 0; padding: 0; height: 100%; width: 100%; background: var(--bg-color); font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; transition: background-color 0.3s ease; }
-    #map { width: 100vw; height: 100dvh; background: var(--bg-color); }
+    body, html { 
+      margin: 0; 
+      padding: 0; 
+      height: 100%; 
+      width: 100%; 
+      background: #f8f9fa; 
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+    }
+    #map { width: 100vw; height: 100dvh; background: #f8f9fa; }
 
     /* Plovoucí hlavní lišta nahoře */
     #filter-bar {
@@ -67,30 +42,22 @@
       flex-direction: column;
       gap: 8px;
       padding: 8px 10px;
-      background: var(--panel-bg);
+      background: rgba(255, 255, 255, 0.98);
       backdrop-filter: blur(6px);
       border-radius: 18px;
-      box-shadow: 0 4px 16px var(--shadow-color);
-      transition: background 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
     }
 
-    /* Horní řádek pro vyhledávač a Dark Mode tlačítko */
-    .search-top-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      width: 100%;
-    }
-
+    /* Obal pro vyhledávač v horním řádku */
     .search-wrapper {
       position: relative;
-      flex: 1;
+      width: 100%;
     }
 
     .search-container {
       display: flex;
       align-items: center;
-      background: var(--input-bg);
+      background: #edf2f7;
       border-radius: 20px;
       padding: 0 12px;
       height: 34px;
@@ -104,31 +71,14 @@
       background: transparent;
       outline: none;
       font-size: 13.5px;
-      color: var(--text-main);
+      color: #1e293b;
       width: 100%;
       height: auto;
       line-height: 1;
       padding: 0;
       margin: 0;
     }
-    #search-input::placeholder { color: var(--text-muted); }
-
-    /* Tlačítko přepínání tmavého režimu */
-    #theme-toggle-btn {
-      border: none;
-      background: var(--input-bg);
-      color: var(--text-main);
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      flex-shrink: 0;
-      transition: transform 0.2s ease, background 0.3s ease;
-    }
-    #theme-toggle-btn:active { transform: scale(0.92); }
+    #search-input::placeholder { color: #94a3b8; }
 
     /* Vyskakovací seznam našeptávače */
     .search-results-dropdown {
@@ -139,13 +89,13 @@
       width: 100%;
       max-height: 220px;
       overflow-y: auto;
-      background: var(--card-bg);
+      background: #ffffff;
       border-radius: 12px;
-      box-shadow: 0 8px 22px var(--shadow-color);
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.12);
       z-index: 2000;
       padding: 6px;
       box-sizing: border-box;
-      border: 1px solid var(--card-border);
+      border: 1px solid #e2e8f0;
     }
 
     .search-results-dropdown.active { display: block; }
@@ -162,7 +112,7 @@
     }
 
     .search-result-item:hover,
-    .search-result-item:active { background-color: var(--input-bg); }
+    .search-result-item:active { background-color: #edf2f7; }
 
     .search-result-header {
       display: flex;
@@ -174,7 +124,7 @@
     .search-result-title {
       font-size: 13px;
       font-weight: 700;
-      color: var(--text-main);
+      color: #1e293b;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -189,13 +139,13 @@
 
     .search-result-sub {
       font-size: 11px;
-      color: var(--text-muted);
+      color: #64748b;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
-    /* Posuvný pás tlačítek kategorií ve spodním řádku */
+    /* Posuvný pás tlačítek kategorií */
     .buttons-scroll-container {
       display: flex;
       align-items: center;
@@ -209,8 +159,8 @@
 
     .filter-btn {
       border: none;
-      background-color: var(--btn-bg);
-      color: var(--btn-text);
+      background-color: #edf2f7;
+      color: #4a5568;
       padding: 0 13px;
       height: 29px;
       min-height: 29px;
@@ -231,7 +181,7 @@
       box-sizing: border-box;
     }
 
-    /* GPS tlačítko a ovládání zoomu */
+    /* Tlačítko pro zaměření GPS polohy */
     #locate-btn {
       position: absolute;
       bottom: 80px;
@@ -239,20 +189,18 @@
       z-index: 1000;
       width: 34px;
       height: 34px;
-      background: var(--control-bg);
-      border: 1px solid var(--card-border);
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
       border-radius: 6px;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      box-shadow: 0 2px 6px var(--shadow-color);
-      transition: background 0.3s ease;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      transition: background 0.2s ease;
     }
-    #locate-btn svg { fill: var(--control-icon); }
-
-    .leaflet-bar { border: 1px solid var(--card-border) !important; box-shadow: 0 2px 6px var(--shadow-color) !important; }
-    .leaflet-bar a { background-color: var(--control-bg) !important; color: var(--text-main) !important; border-bottom: 1px solid var(--card-border) !important; }
+    #locate-btn:hover { background: #f8fafc; }
+    #locate-btn svg { fill: #2d3748; }
 
     /* Bod polohy uživatele */
     .user-location-marker {
@@ -266,38 +214,38 @@
 
     /* Vzhled popup karet */
     .custom-svg-marker { background: transparent; border: none; }
-    .leaflet-popup-content-wrapper { background: var(--card-bg) !important; border-radius: 12px; box-shadow: 0 8px 24px var(--shadow-color) !important; border: 1px solid var(--card-border); }
-    .leaflet-popup-tip { background: var(--card-bg) !important; }
-    .popup-box { color: var(--text-main); padding: 2px; line-height: 1.5; }
+    .leaflet-popup-content-wrapper { 
+      background: #ffffff !important; 
+      border-radius: 12px; 
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important; 
+      border: 1px solid #e2e8f0; 
+    }
+    .popup-box { color: #1e293b; padding: 2px; line-height: 1.5; }
     .popup-top-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
     .popup-tag { display: inline-block; color: #fff; font-size: 10px; font-weight: 700; text-transform: uppercase; padding: 3px 8px; border-radius: 12px; }
-    .popup-dist-badge { font-size: 11px; font-weight: 700; color: #4f818c; background: var(--feature-bg); padding: 2px 7px; border-radius: 10px; }
-    .popup-title { margin: 0 0 6px 0; font-size: 15px; font-weight: 700; color: var(--text-main); }
-    .popup-address { margin: 0 0 8px 0; font-size: 12px; color: var(--text-muted); }
-    .popup-desc { margin: 0 0 8px 0; font-size: 13px; color: var(--text-main); }
-    .popup-features { background: var(--feature-bg); padding: 6px 8px; border-radius: 6px; font-size: 11.5px; line-height: 1.4; border-left: 3px solid #4f818c; margin-bottom: 8px; }
-    .popup-features strong { color: var(--text-main); display: block; margin-bottom: 2px; }
+    .popup-dist-badge { font-size: 11px; font-weight: 700; color: #4f818c; background: #f1f5f9; padding: 2px 7px; border-radius: 10px; }
+    .popup-title { margin: 0 0 6px 0; font-size: 15px; font-weight: 700; color: #1e293b; }
+    .popup-address { margin: 0 0 8px 0; font-size: 12px; color: #64748b; }
+    .popup-desc { margin: 0 0 8px 0; font-size: 13px; color: #334155; }
+    .popup-features { background: #f1f5f9; padding: 6px 8px; border-radius: 6px; font-size: 11.5px; line-height: 1.4; border-left: 3px solid #4f818c; margin-bottom: 8px; }
+    .popup-features strong { color: #0f172a; display: block; margin-bottom: 2px; }
     .popup-actions { display: flex; gap: 6px; }
     .nav-btn { flex: 1; display: inline-flex; align-items: center; justify-content: center; padding: 6px; font-size: 11.5px; font-weight: 600; text-decoration: none; border-radius: 6px; }
-    .mapycz-btn { background-color: rgba(192, 38, 38, 0.12); color: #e05252; border: 1px solid rgba(192, 38, 38, 0.3); }
-    .gmaps-btn { background-color: rgba(26, 115, 232, 0.12); color: #5c9cfa; border: 1px solid rgba(26, 115, 232, 0.3); }
+    .mapycz-btn { background-color: #fbeae8; color: #c02626; border: 1px solid #f5c2bd; }
+    .gmaps-btn { background-color: #e8f0fe; color: #1a73e8; border: 1px solid #c2d7fa; }
   </style>
 </head>
 <body>
 
   <div id="filter-bar">
-    <div class="search-top-row">
-      <div class="search-wrapper">
-        <div class="search-container">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="#718096">
-            <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-          </svg>
-          <input type="text" id="search-input" placeholder="Hledat místo..." autocomplete="off" />
-        </div>
-        <div id="search-results" class="search-results-dropdown"></div>
+    <div class="search-wrapper">
+      <div class="search-container">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="#718096">
+          <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 14z"/>
+        </svg>
+        <input type="text" id="search-input" placeholder="Hledat místo..." autocomplete="off" />
       </div>
-
-      <button id="theme-toggle-btn" title="Přepnout tmavý/světlý režim">🌙</button>
+      <div id="search-results" class="search-results-dropdown"></div>
     </div>
 
     <div class="buttons-scroll-container">
@@ -318,7 +266,7 @@
   </button>
 
   <script>
-    // 1. Vybledlá, senzoricky maximálně šetrná paleta
+    // 1. Zklidněná, vybledlá pastelová paleta
     const categoryConfig = {
       "Restaurace": { 
         color: "#a65d75", 
@@ -345,7 +293,7 @@
     function createCustomIcon(kat) {
       const cfg = categoryConfig[kat] || { color: "#6c757d", path: '<circle cx="12" cy="12" r="6"/>' };
       const svg = `
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 42" width="30" height="40" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 42" width="30" height="40" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));">
           <path d="M16 0C7.16 0 0 7.16 0 16c0 10.5 16 26 16 26s16-15.5 16-26C32 7.16 24.84 0 16 0z" fill="${cfg.color}" stroke="#fff" stroke-width="1.5"/>
           <circle cx="16" cy="15" r="9" fill="rgba(255,255,255,0.25)" />
           <g transform="translate(4, 3)" fill="#fff">${cfg.path}</g>
@@ -353,13 +301,7 @@
       return L.divIcon({ html: svg, className: 'custom-svg-marker', iconSize: [30, 40], iconAnchor: [15, 40], popupAnchor: [0, -36] });
     }
 
-    // 2. Inicializace mapy a správa Dark Mode
-    let isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const themeToggleBtn = document.getElementById('theme-toggle-btn');
-
-    const lightTileUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}';
-    const darkTileUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}';
-
+    // 2. Inicializace mapy
     const hradecBounds = L.latLngBounds([50.1400, 15.6800], [50.2900, 15.9800]);
     const map = L.map('map', {
       center: [50.2092, 15.8328],
@@ -373,46 +315,22 @@
 
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-    const baseTileLayer = L.tileLayer(isDarkMode ? darkTileUrl : lightTileUrl, {
+    // Šedobílá mapa Esri bez popisků
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
       attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
       maxNativeZoom: 16,
       maxZoom: 19
     }).addTo(map);
 
-    let maskGeoJsonLayer = null;
-
-    function updateTheme(dark) {
-      isDarkMode = dark;
-      if (isDarkMode) {
-        document.body.classList.add('dark-theme');
-        themeToggleBtn.innerText = '☀️';
-        baseTileLayer.setUrl(darkTileUrl);
-        if (maskGeoJsonLayer) {
-          maskGeoJsonLayer.setStyle({ fillColor: '#0f172a', color: '#334155' });
-        }
-      } else {
-        document.body.classList.remove('dark-theme');
-        themeToggleBtn.innerText = '🌙';
-        baseTileLayer.setUrl(lightTileUrl);
-        if (maskGeoJsonLayer) {
-          maskGeoJsonLayer.setStyle({ fillColor: '#ffffff', color: '#cbd5e1' });
-        }
-      }
-    }
-
-    themeToggleBtn.addEventListener('click', () => {
-      updateTheme(!isDarkMode);
-    });
-
     // 3. Načtení masky Hradce
     fetch('Maska_Hradce.geojson')
       .then(res => res.json())
       .then(maskData => {
-        maskGeoJsonLayer = L.geoJSON(maskData, {
+        L.geoJSON(maskData, {
           style: { 
-            fillColor: isDarkMode ? '#0f172a' : '#ffffff', 
+            fillColor: '#ffffff', 
             fillOpacity: 0.85, 
-            color: isDarkMode ? '#334155' : '#cbd5e1', 
+            color: '#cbd5e1', 
             weight: 1 
           },
           interactive: false
@@ -420,12 +338,10 @@
       })
       .catch(err => console.error("Chyba při načítání masky:", err));
 
-    updateTheme(isDarkMode);
-
     // 4. Správa dat, filtru a vyhledávání
     const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTA4Zd6p3HcPigz2X2PssGXnHt06uCyV51pAZYz-2yjO-QYEepMNcNua9PvfLl2qyT54iNTqO-KqHnE/pub?gid=0&single=true&output=csv';
     let allMarkers = [];
-    let activeCategory = null; // Výchozí čistá mapa
+    let activeCategory = null; // Výchozí čistá mapa bez pinů
     let currentUserLatLng = null;
 
     const searchInput = document.getElementById('search-input');
@@ -559,7 +475,7 @@
       }
     });
 
-    // 5. Tlačítka filtru (opětovné kliknutí výběr zruší zpět na čistou mapu)
+    // 5. Tlačítka filtru (opětovné kliknutí zruší filtr)
     filterButtons.forEach(btn => {
       btn.addEventListener('click', (e) => {
         const clickedCat = e.currentTarget.getAttribute('data-kat');
